@@ -1,0 +1,34 @@
+﻿@model ML.Movie
+@if (Model.Movies.Count > 0)
+{
+    <div class="row">
+        <LINK REL=StyleSheet HREF="~/css/cards.css">
+        @foreach (ML.Movie movie in Model.Movies)
+        {
+
+            <div class="movie_card" id="bright">
+                <div class="info_section">
+                    <div class="movie_header">
+                        <img class="locandina" src="@movie.Imagen" class="card-img-top" style=" height:100px; width:70px; " />
+                        @movie.Titulo
+
+                    </div>
+                    <div class="movie_desc">
+                        <p class="text">
+                        <p class="card-text text-center" style="display:none" id="Preciouni">  @movie.IdMovie</p>
+                            @movie.Descripcion
+                        </p>
+                    </div>
+                    <div class="movie_social">
+                        <ul>
+                            <a href="@Url.Action("Agregar", "Movie", new {  IdMovie = movie.IdMovie })" class="btn mr-2">Favorito <i class="fa-brands fa-gratipay fa-beat-fade" style="color:#f7528e"></i></a>
+                        </ul>
+                    </div>
+                </div>
+                <div class="blur_back bright_back"></div>
+            </div>
+
+
+        }
+    </div>
+}
