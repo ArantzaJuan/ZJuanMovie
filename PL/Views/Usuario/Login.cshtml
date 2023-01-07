@@ -1,0 +1,32 @@
+﻿@model ML.Usuario
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    
+</head>
+<body>
+    <form action="#" class="login__form" method="POST">
+    <link rel="stylesheet" href="~/css/Login.css" />
+
+    <div class="login">
+        <div class="form">
+            <h2>Welcome</h2>
+            <p style="color:aliceblue">UserName</p>
+            @Html.TextBoxFor(model => model.UserName, new { @class = "input", autocomplete = "off", @id="user"})
+            <p style="color:aliceblue">Password</p>
+            @Html.TextBoxFor(model => model.Password, new { @class = "input", @type = "password" , autocomplete = "off", @id="pass"})
+            <div>
+                <input class="button" type="submit" value="Sign In" href="@Url.ActionLink("Login", "UsuarioController")">
+
+            </div>
+
+        </div>
+    </div>
+    </form>
+</body>
+</html>
