@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ML;
 using Newtonsoft.Json.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+
 
 namespace PL.Controllers
 {
@@ -56,6 +59,7 @@ namespace PL.Controllers
                     foreach (var resultitem in resultJSON.results)
                     {
                         ML.Movie movieItem = new ML.Movie();
+                        movieItem.IdMovie = resultitem.id;
                         movieItem.Titulo = resultitem.original_title;
                         movieItem.Descripcion = resultitem.overview;
                         movieItem.Imagen = "https://www.themoviedb.org/t/p/w600_and_h900_bestv2" + resultitem.poster_path;
@@ -66,23 +70,48 @@ namespace PL.Controllers
             return View(movie);
         }
         [HttpGet]
-        public ActionResult Agregar(int IdMovie)
+        public ActionResult Agregar(int IdMovie, bool favorite)
         {
+            ML.Favorita movieFavorite = new ML.Favorita();
+            movieFavorite.media_type = "movie";
+            movieFavorite.media_id = IdMovie;
+            movieFavorite.favorite = favorite;
             ML.Result result = new ML.Result();
-            ML.Movie movie = new ML.Movie();
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri("https://api.themoviedb.org/3/");
-                var responseTask = client.PostAsync("account/16835969/favorite?api_key=efdb86e6d01f5440a9dd3ba13c9ac0b4&session_id=ce4751d348f3a41676a18e85d62eb0129ff60554"+IdMovie);
-                responseTask.Wait();
-                var resultServicio = responseTask.Result;
-
-                if (resultServicio.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    result.Correct = true;
+                    client.BaseAddress = new Uri("https://api.themoviedb.org/3/");
+                    string responseTask = "account/16835969/favorite?api_key=efdb86e6d01f5440a9dd3ba13c9ac0b4&session_id=ce4751d348f3a41676a18e85d62eb0129ff60554";
+                    var postTask = client.PostAsJsonAsync<ML.Favorita>(responseTask, movieFavorite);
+                    postTask.Wait();
+
+                    var resultServicio = postTask.Result;
+
+                    if (resultServicio.IsSuccessStatusCode)
+                    {
+                        result.Correct = true;
+                    }
+                    else
+                    {
+                        result.Correct = false;
+                    }
                 }
+              
             }
-            return View();
+            catch(Exception ex)
+            {
+                result.Correct = false;
+                result.Ex = ex;
+            }
+            if (result.Correct)
+            {
+                return Redirect("Movie");
+            }
+            else
+            {
+                return Redirect("PopularMovie");
+            }
         }
     }
 }
